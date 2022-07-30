@@ -3,9 +3,9 @@ pipeline {
     environment {
         AWS_ACCOUNT_ID="367022636628"
         AWS_DEFAULT_REGION="ap-south-1" 
-        IMAGE_REPO_NAME="ECR_REPO_NAME"
+        IMAGE_REPO_NAME="jenkins-docker-pipeline"
         IMAGE_TAG="IMAGE_TAG"
-        REPOSITORY_URI = "${367022636628}.dkr.ecr.${ap-south-1}.amazonaws.com/${IMAGE_REPO_NAME}"
+        REPOSITORY_URI = "${367022636628}.dkr.ecr.${ap-south-1}.amazonaws.com/${public.ecr.aws/m9i9n7s1/jenkins-docker-pipeline}"
     }
    
     stages {
@@ -21,7 +21,7 @@ pipeline {
         
         stage('Cloning Git') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/sd031/aws_codebuild_codedeploy_nodeJs_demo.git']]])    
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/ajaydspl/jenkins-docker-pipeline.git']]])    
             }
         }
   
@@ -29,7 +29,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build "${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+          dockerImage = docker.build "${jenkins-docker-pipeline}:${IMAGE_TAG}"
         }
       }
     }
@@ -38,8 +38,8 @@ pipeline {
     stage('Pushing to ECR') {
      steps{  
          script {
-                sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"
-                sh "docker push ${367022636628}.dkr.ecr.${ap-south-1}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+                sh "docker tag ${jenkins-docker-pipeline}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"
+                sh "docker push ${367022636628}.dkr.ecr.${ap-south-1}.amazonaws.com/${jenkins-docker-pipeline}:${IMAGE_TAG}"
          }
         }
       }
